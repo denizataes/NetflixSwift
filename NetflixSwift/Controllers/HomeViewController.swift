@@ -19,10 +19,10 @@ enum Sections: Int {
 class HomeViewController: UIViewController {
     
     let sectionTitles: [String] = [
-    "Trending Movies",
-    "Trending Tv",
+    "Trendıng Movıes",
+    "Trendıng Tv",
     "Popular",
-    "Upcoming Movies",
+    "Upcomıng Movıes",
     "Top Rated",
     ]
     
@@ -95,8 +95,6 @@ extension HomeViewController:  UITableViewDelegate, UITableViewDataSource{
                     case .failure(let error):
                         print(error.localizedDescription)
                     }
-                
-                    
                 }
             case Sections.TrendingTV.rawValue:
                 APICaller.shared.getTrendingTvs { result in
@@ -136,8 +134,6 @@ extension HomeViewController:  UITableViewDelegate, UITableViewDataSource{
                 }
             default:
                return UITableViewCell()
-                
-           
         }
         return cell
     }
