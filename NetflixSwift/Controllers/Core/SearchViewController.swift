@@ -18,6 +18,14 @@ class SearchViewController: UIViewController {
         
     }()
     
+    private let SearchController: UISearchController = {
+       let controller = UISearchController(searchResultsController: SearchResultsViewController())
+        controller.searchBar.placeholder = "Search for a Movie or a TV show"
+        controller.searchBar.searchBarStyle = .minimal
+        return controller
+        
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -27,8 +35,10 @@ class SearchViewController: UIViewController {
         view.addSubview(discoverTable)
         discoverTable.delegate = self
         discoverTable.dataSource = self
-        
+        navigationItem.searchController = SearchController
+        navigationController?.navigationBar.tintColor = .white
         fetchDiscoverMovies()
+        SearchController.searchResultsUpdater = self
         
     }
     private func fetchDiscoverMovies(){
@@ -68,5 +78,32 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource{
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 140
+    }
+}
+
+
+extension SearchViewController: UISearchResultsUpdating{
+    func updateSearchResults(for searchController: UISearchController) {
+        let searchBar = searchController.searchBar
+        
+        guard let query = searchBar.text,
+              !query.trimmingCharacters(in: .whitespaces).isEmpty,
+              query.trimmingCharacters(in: .whitespaces).count >= 3,
+              let resultsController = searchController.searchResultsController as? SearchResultsViewController
+        else{return}
+        
+        APICaller.shared.search(with: query) { result in
+            DispatchQueue.main.async {
+                switch result{
+                case .success(let movies):
+                    resultsController.titles = movies
+                    resultsController.searchResultsCollectionView.reloadData()
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+                
+                
+            }
+        }
     }
 }
