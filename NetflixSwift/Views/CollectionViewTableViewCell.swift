@@ -55,6 +55,20 @@ class CollectionViewTableViewCell: UITableViewCell {
         }
     }
     
+    private func downloadTitleAt(indexPath: IndexPath){
+        let model = titles[indexPath.row]
+        DataPersistanceManager.shared.downloadTitleWith(model: model) { result in
+            switch result {
+            case .success():
+                NotificationCenter.default.post(name: NSNotification.Name("downloaded"), object: nil)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+            
+        }
+        
+    }
+    
 }
 extension CollectionViewTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -95,18 +109,17 @@ extension CollectionViewTableViewCell: UICollectionViewDelegate, UICollectionVie
 
     }
     
-    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+    internal func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         
         let config = UIContextMenuConfiguration(
             identifier: nil,
-            previewProvider: nil) { _ in
+            previewProvider: nil) {[weak self] _ in
                 let downloadAction = UIAction(title: "Download", subtitle: nil,state: .off) { _ in
-                    print("Donwload tapped")
+                    self?.downloadTitleAt(indexPath: indexPath)
                 }
                 return UIMenu(title: "", image: nil, identifier: nil, options: .displayInline, children: [downloadAction])
         }
         return config
     }
-    
     
 }
