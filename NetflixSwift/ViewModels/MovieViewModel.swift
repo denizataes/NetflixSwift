@@ -7,8 +7,7 @@
 
 import Foundation
 
-struct MovieViewModel
-{
+struct MovieViewModel {
     let titleName: String
     let posterURL: String
 }
